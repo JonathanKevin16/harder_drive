@@ -1,0 +1,58 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables file
+.env
+*.env
+
+# Flask specific files
+instance/
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# macOS files
+.DS_Store
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# Coverage reports
+htmlcov/
+.coverage
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# mypy
+.mypy_cache/
+
+# Unit test / test coverage reports
+*.xml
+*.out
+*.coverage
+
+# Other IDE files
+.idea/
+.vscode/
+
+/uploads/*
+!/uploads/.gitignore

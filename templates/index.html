@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harder Drive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto p-6 max-w-3xl">
+        <h1 class="text-4xl font-bold mb-8 text-center">Harder Drive</h1>
+
+        <div class="bg-white p-8 rounded-lg shadow-lg mb-8 border border-gray-200">
+            <h2 class="text-3xl font-semibold mb-6">Store File</h2>
+            <form id="uploadForm" enctype="multipart/form-data" class="flex flex-col space-y-4">
+                <input type="file" id="fileInput" name="file" required class="border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="bg-blue-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Store</button>
+            </form>
+            <div id="uploadResult" class="mt-4 text-lg"></div>
+        </div>
+
+        <div class="bg-white p-8 rounded-lg shadow-lg mb-8 border border-gray-200">
+            <h2 class="text-3xl font-semibold mb-6">Retrieve File</h2>
+            <div class="flex items-center space-x-4 mb-6">
+                <input type="text" id="retrieveFilename" placeholder="Filename" aria-label="Filename" class="border border-gray-300 p-3 rounded-lg shadow-sm flex-grow focus:outline-none focus:ring-2 focus:ring-green-500">
+                <button onclick="retrieveFile()" class="bg-green-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">Retrieve</button>
+            </div>
+            <div id="retrieveResult" class="text-lg"></div>
+        </div>
+
+        <div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+            <h2 class="text-3xl font-semibold mb-6">Stored Files</h2>
+            <button onclick="listFiles()" class="bg-yellow-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 mb-6">Refresh List</button>
+            <ul id="fileList" class="list-disc pl-5 text-lg"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/store', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const uploadResult = document.getElementById('uploadResult');
+                uploadResult.textContent = data.message;
+                uploadResult.style.color = data.success ? 'green' : 'red';
+            })
+            .catch(error => {
+                document.getElementById('uploadResult').textContent = 'An error occurred: ' + error.message;
+                document.getElementById('uploadResult').style.color = 'red';
+            });
+        });
+
+        function retrieveFile() {
+            const filename = document.getElementById('retrieveFilename').value;
+            fetch('/retrieve', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `filename=${encodeURIComponent(filename)}`
+            })
+            .then(response => {
+                const message = response.headers.get('X-Harder-Drive-Message');
+                if (response.ok) {
+                    response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    });
+                    document.getElementById('retrieveResult').textContent = message || 'File retrieved successfully.';
+                    document.getElementById('retrieveResult').style.color = 'green';
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data && data.message) {
+                    document.getElementById('retrieveResult').textContent = data.message;
+                    document.getElementById('retrieveResult').style.color = 'red';
+                }
+            })
+            .catch(error => {
+                document.getElementById('retrieveResult').textContent = 'An error occurred: ' + error.message;
+                document.getElementById('retrieveResult').style.color = 'red';
+            });
+        }
+
+        function getConversation() {
+            fetch('/converse')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('conversation').textContent = data.message;
+            })
+            .catch(error => {
+                document.getElementById('conversation').textContent = 'An error occurred: ' + error.message;
+            });
+        }
+
+        function listFiles() {
+            fetch('/list_files')
+            .then(response => response.json())
+            .then(data => {
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = '';
+                data.files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.textContent = file;
+                    fileList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                document.getElementById('fileList').textContent = 'An error occurred: ' + error.message;
+            });
+        }
+
+        getConversation();
+        listFiles();  // Initial file list population
+    </script>
+</body>
+</html>
