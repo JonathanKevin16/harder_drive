@@ -14,7 +14,7 @@ This project is a whimsical file storage simulation designed to make your tech l
 Honestly, I needed to refresh my mind about Python and dive back into coding with a project that’s both challenging and delightfully absurd. Plus, everyone needs a file system that makes them chuckle.
 
 ## Installation
-1. Clone the repository: `git clone https://github.com/yourusername/hard_drive.git`
+1. Clone the repository: `git clone https://github.com/JonathanKevin16/harder_drive.git`
 2. Navigate to the project directory: 
 3. Install dependencies: `pip install -r requirements.txt`
 
