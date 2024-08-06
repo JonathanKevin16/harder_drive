@@ -1,8 +1,11 @@
-# Harder Drive Project
+# Harder Drive : A Delightfully Absurd File Storage Simulation
 
 Welcome to the Harder Drive Project! 🚀
 
 This project is a whimsical file storage simulation designed to make your tech life more entertaining. With this project, you'll experience file storage with a twist:
+
+
+![Harder Drive Screenshot](static/harderdrive.jpg)
 
 ## Features
 - **Randomly Refuses to Store Files**: Because clearly, your files aren’t that important.
